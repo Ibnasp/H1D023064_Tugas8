@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:tokokita/bloc/login_bloc.dart';
+import 'package:tokokita/helpers/user_info.dart';
+import 'package:tokokita/ui/produk_page.dart';
+import 'package:tokokita/widget/warning_dialog.dart';
 import 'package:tokokita/ui/registrasi_page.dart';
+import 'package:tokokita/widget/success_dialog.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -25,7 +30,6 @@ class _LoginPageState extends State<LoginPage> {
           child: Form(
             key: _formKey,
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 _emailTextField(),
                 _passwordTextField(),
@@ -77,9 +81,53 @@ class _LoginPageState extends State<LoginPage> {
       child: const Text('Login'),
       onPressed: () {
         var validate = _formKey.currentState!.validate();
-      },
-    );
+        if (validate) {
+          if (!_isLoading) _submit();
+        }
+      });
   }
+
+  void _submit() {
+    _formKey.currentState!.save();
+    setState(() {
+      _isLoading = true;
+    });
+    LoginBloc.login(
+      email: _emailTextboxController.text,
+      password: _passwordTextboxController.text)
+      .then((value) async{
+        if (value.code == 200) {
+          await showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (BuildContext context) => const SuccessDialog(
+                description: 'Login berhasil',
+          ));
+
+          await UserInfo().setToken(value.token.toString());
+          await UserInfo().setUserID(int.parse(value.userID.toString()));
+          Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) => const ProdukPage()));
+        } else {
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (BuildContext context) => const WarningDialog(
+                description: 'Login gagal, silahkan coba lagi',
+          ));
+        }
+        }, onError: ((error) {
+          print(error);
+          showDialog(
+            context: context,
+            builder: (BuildContext context) => const WarningDialog(
+                description: 'Login gagal, silahkan coba lagi',
+            ));
+      }));
+        setState(() {
+          _isLoading = false;
+        });
+      }
 
 //Membuat Menu untuk membuka halaman Registrasi
   Widget _menuRegistrasi() {

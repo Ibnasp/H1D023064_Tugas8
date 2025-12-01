@@ -12,7 +12,7 @@ class Login {
     this.userEmail,
   });
   factory Login.fromJson(Map<String, dynamic> obj) {
-    if (obj['data'] == null) {
+    if (obj['code'] == 200) {
       return Login(
         code: obj['code'],
         status: obj['status'],

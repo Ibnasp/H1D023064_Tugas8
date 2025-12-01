@@ -2,16 +2,16 @@ import 'package:flutter/material.dart';
 
 class Consts {
   Consts._();
-
-  static const double padding = 20.0;
+  static const double padding = 16.0;
   static const double avatarRadius = 66.0;
 }
 
-class WarningDialog extends StatelessWidget {
+class SuccessDialog extends StatelessWidget {
   final String? description;
   final VoidCallback? okClick;
 
-  const WarningDialog({Key? key, this.description, this.okClick}) : super(key: key);
+  const SuccessDialog({Key? key, this.description, this.okClick}) 
+  : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +24,7 @@ class WarningDialog extends StatelessWidget {
     );
   }
 
-dialogContent(BuildContext context) {
+  dialogContent(BuildContext context) {
     return Container(
           padding: const EdgeInsets.only(
             top: Consts.padding,
@@ -49,11 +49,11 @@ dialogContent(BuildContext context) {
             mainAxisSize: MainAxisSize.min,
             children: [
               const Text(
-                'GAGAL',
+                'SUKSES',
                 style: TextStyle(
                   fontSize: 24.0,
                   fontWeight: FontWeight.w700,
-                  color: Colors.red),
+                  color: Colors.green),
               ),
               const SizedBox(height: 16.0),
               Text(
@@ -64,9 +64,10 @@ dialogContent(BuildContext context) {
               const SizedBox(height: 24.0),
               Align(
                 alignment: Alignment.bottomRight,
-                child: ElevatedButton(
+                child: OutlinedButton(
                   onPressed: () {
                     Navigator.of(context).pop();
+                    okClick!();
                   },
                   child: const Text('OK'),
                 ),
